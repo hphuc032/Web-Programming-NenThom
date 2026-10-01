@@ -34,5 +34,5 @@ INSERT INTO Product(productName,productCode,categoryId,description,price,amount,
 ('Bàn phím cơ Campus','ACC-K87',4,'Bàn phím cơ 87 phím dành cho sinh viên lập trình.',1090000,23,23,'assets/images/categories/tech-accessory.png',14,1,NOW(),3),
 ('Sổ tay Web Developer','BOOK-WEB',5,'Sổ tay ghi chú bài tập lập trình web.',79000,100,100,'assets/images/categories/technology-book.png',3,1,NOW(),3);
 
-INSERT INTO Cart(userId,buyDate,status) VALUES (2,NOW(),0);
+INSERT INTO Cart(userId,buyDate,status) VALUES (2,NOW(),'CART');
 INSERT INTO CartItem(quantity,unitPrice,productId,cartId) VALUES (1,390000,3,1),(2,79000,10,1);

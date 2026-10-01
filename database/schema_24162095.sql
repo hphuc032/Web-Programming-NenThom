@@ -68,7 +68,13 @@ CREATE TABLE Cart (
     cartId INT PRIMARY KEY AUTO_INCREMENT,
     userId INT NOT NULL,
     buyDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    status BOOLEAN NOT NULL DEFAULT FALSE,
+    status VARCHAR(30) NOT NULL DEFAULT 'CART',
+    receiverName VARCHAR(160),
+    receiverPhone VARCHAR(30),
+    shippingAddress VARCHAR(500),
+    paymentMethod VARCHAR(30),
+    totalAmount DECIMAL(15,2),
+    note VARCHAR(500),
     CONSTRAINT fk_cart_user FOREIGN KEY (userId) REFERENCES Users(userId)
 ) ENGINE=InnoDB;
 

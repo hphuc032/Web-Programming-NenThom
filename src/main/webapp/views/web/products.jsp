@@ -26,10 +26,22 @@
                         <div class="product-code">Mã sản phẩm: <strong><c:out value="${product.productCode}"/></strong></div>
                         <ul class="product-meta">
                             <li><span>Danh mục</span><strong><c:out value="${product.categoryName}"/></strong></li>
-                            <li><span>Số lượng</span><strong><c:out value="${product.amount}"/></strong></li>
+                            <li><span>Tồn kho</span><strong><c:out value="${product.stock}"/></strong></li>
                         </ul>
                         <div class="product-price"><fmt:formatNumber value="${product.price}" type="number"/> đ</div>
-                        <a class="btn btn-outline-primary btn-sm mt-3" href="${pageContext.request.contextPath}/product/detail?id=${product.productId}">Xem chi tiết</a>
+                        <div class="product-actions mt-3">
+                            <a class="btn btn-outline-primary btn-sm" href="${pageContext.request.contextPath}/product/detail?id=${product.productId}">Xem chi tiết</a>
+                            <c:choose>
+                                <c:when test="${product.stock gt 0}">
+                                    <form method="post" action="${pageContext.request.contextPath}/cart/add">
+                                        <input type="hidden" name="productId" value="${product.productId}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button class="btn btn-primary btn-sm" type="submit">Thêm vào giỏ</button>
+                                    </form>
+                                </c:when>
+                                <c:otherwise><span class="badge badge-secondary">Hết hàng</span></c:otherwise>
+                            </c:choose>
+                        </div>
                     </div>
                 </article>
             </c:forEach>

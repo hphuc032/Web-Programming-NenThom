@@ -14,10 +14,21 @@
                 <div class="detail-row"><dt>Mã sản phẩm</dt><dd><c:out value="${product.productCode}"/></dd></div>
                 <div class="detail-row"><dt>Cửa hàng</dt><dd>#<c:out value="${product.sellerId}"/> - <c:out value="${product.sellerName}"/></dd></div>
                 <div class="detail-row"><dt>Danh mục</dt><dd><c:out value="${product.categoryName}"/></dd></div>
-                <div class="detail-row"><dt>Amount</dt><dd><c:out value="${product.amount}"/> sản phẩm</dd></div>
+                <div class="detail-row"><dt>Tồn kho</dt><dd><c:out value="${product.stock}"/> sản phẩm</dd></div>
             </dl>
             <div class="detail-description"><h2>Mô tả sản phẩm</h2><p class="text-muted"><c:out value="${product.description}"/></p></div>
-            <a class="btn btn-secondary" href="${pageContext.request.contextPath}/products">← Quay lại danh sách</a>
+            <c:if test="${product.stock gt 0}">
+                <form class="detail-cart-form" method="post" action="${pageContext.request.contextPath}/cart/add">
+                    <input type="hidden" name="productId" value="${product.productId}">
+                    <label for="quantity">Số lượng</label>
+                    <input id="quantity" class="form-control" type="number" name="quantity" value="1" min="1" max="${product.stock}" required>
+                    <button class="btn btn-primary" type="submit">Thêm vào giỏ hàng</button>
+                </form>
+            </c:if>
+            <div class="button-row mt-3">
+                <a class="btn btn-secondary" href="${pageContext.request.contextPath}/products">← Quay lại danh sách</a>
+                <c:if test="${product.stock le 0}"><span class="badge badge-secondary">Sản phẩm đã hết hàng</span></c:if>
+            </div>
         </div>
     </div>
 </article>
