@@ -75,3 +75,36 @@ Chỉ dùng ảnh chụp thật. Mỗi ảnh phải chụp toàn màn hình, th�
 - [ ] Chèn ảnh thật vào đúng placeholder trong `24162095.docx`.
 - [ ] Cập nhật trạng thái SMTP trong README/self-grade nếu đã test gửi thật.
 - [ ] Mở lại ZIP và kiểm tra source build được.
+
+## Cart
+
+- [ ] `CartDAO_24162095` và `CartDAOImpl_24162095` dùng PreparedStatement.
+- [ ] `CartServiceImpl_24162095`: add/update/remove và validate stock.
+- [ ] Add/Update/Remove/Clear Cart controllers.
+- [ ] `views/web/cart.jsp` trong IDE.
+- [ ] Browser `/cart`: ảnh, giá, quantity, subtotal, total.
+- [ ] Browser thông báo khi nhập quantity vượt stock.
+
+## COD Checkout
+
+- [ ] `CheckoutController_24162095`.
+- [ ] `CheckoutDAOImpl_24162095`: transaction, `FOR UPDATE`, commit/rollback.
+- [ ] `views/web/checkout.jsp`.
+- [ ] Browser checkout thành công.
+- [ ] MySQL Cart: `NEW`, `COD`, `totalAmount` đúng.
+- [ ] MySQL Product: stock đã giảm; CartItem vẫn còn.
+
+## Order History
+
+- [ ] `OrderHistoryController_24162095` và `OrderDetailController_24162095`.
+- [ ] `OrderDAOImpl_24162095`: filter status và query ownership.
+- [ ] `views/web/orders.jsp` và `order-detail.jsp`.
+- [ ] Browser trạng thái `NEW`.
+- [ ] Browser `CONFIRMED` sau UPDATE database.
+- [ ] Browser `PREPARING`.
+- [ ] Browser `IN_TRANSIT`.
+- [ ] Browser `OUT_FOR_DELIVERY`.
+- [ ] Browser `DELIVERED`.
+- [ ] Browser `CANCELLED`.
+- [ ] Browser `RETURNED`.
+- [ ] User khác truy cập order nhận 404 (không lộ dữ liệu).

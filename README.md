@@ -33,7 +33,11 @@ MySQL scripts:
 1. Chạy `database/schema_24162095.sql`.
 2. Chạy `database/sample-data_24162095.sql`.
 
-Database `web24162095` có đúng 7 bảng: `UserRoles`, `Users`, `Seller`, `Category`, `Product`, `Cart`, `CartItem`; 7 foreign key và mọi primary key ID đều `AUTO_INCREMENT`.
+Với database cũ đã có dữ liệu, không chạy lại schema. Chỉ chạy `database/migration_cart_order_24162095.sql`. Migration không drop bảng: đổi `Cart.status` từ boolean sang mã trạng thái, ánh xạ `0 → CART`, `1 → NEW`, rồi thêm thông tin nhận hàng/COD.
+
+Database `web24162095` có 7 bảng: `UserRoles`, `Users`, `Seller`, `Category`, `Product`, `Cart`, `CartItem`; 7 foreign key và mọi primary key ID đều `AUTO_INCREMENT`.
+
+`Product.stock` là tồn kho thực tế được kiểm tra và trừ trong transaction checkout. `Product.amount` được giữ nguyên để tương thích dữ liệu/đề cũ và không bị trừ song song.
 
 Đề minh họa `cartId/cartItemId` dạng text nhưng đồng thời yêu cầu tất cả ID tăng tự động; project ưu tiên yêu cầu tất cả ID auto increment, nên hai cột này dùng `INT AUTO_INCREMENT`.
 
@@ -62,7 +66,7 @@ cd D:\JavaWeb\Project\24162095\WebNenThom
 mvn clean package
 ```
 
-Kết quả: `target/24162095_made.war`. Lần kiểm thử cuối: BUILD SUCCESS, 2 test, 0 failure/error.
+Kết quả: `target/24162095_made.war`. Lần kiểm thử cuối: BUILD SUCCESS, 9 test, 0 failure/error.
 
 ## Deploy Tomcat
 
@@ -92,9 +96,65 @@ Không dùng các mật khẩu mẫu này cho hệ thống thật.
 
 - Public: `/home`, `/products`, `/product/detail?id=1`
 - Auth: `/register`, `/verify-otp`, `/login`, `/logout`
+- User Cart: `/cart`, POST `/cart/add`, `/cart/update`, `/cart/remove`, `/cart/clear`
+- User COD: GET/POST `/checkout`, GET `/checkout/success`
+- User Orders: `/orders`, `/orders?status=NEW`, `/order/detail?id=1`
 - Seller: `/seller/home`
 - Admin: `/admin/home`, `/admin/users`, `/admin/user/add`, `/admin/user/edit?id=`, `/admin/user/delete`
 - Admin Category: `/admin/categories`, `/admin/category/add`, `/admin/category/edit?id=`, `/admin/category/delete`
+
+## User Shopping Features
+
+### Cart
+
+- Mỗi User có tối đa một giỏ đang mua với `status=CART` trong luồng ứng dụng.
+- Add mới hoặc cộng dồn đúng một row theo unique `(cartId, productId)`.
+- Hỗ trợ tăng, giảm, nhập số lượng trực tiếp, xóa item và xóa toàn bộ.
+- Backend bắt buộc `1 <= quantity <= Product.stock`; chặn product inactive/hết hàng.
+- `unitPrice` lấy từ database khi thêm lần đầu và được giữ làm snapshot; không nhận giá từ browser.
+
+### COD Checkout
+
+- Form gồm người nhận, số điện thoại, địa chỉ, ghi chú; payment cố định `COD`.
+- `CheckoutDAOImpl_24162095` dùng duy nhất một JDBC `Connection`, `setAutoCommit(false)` và `SELECT ... FOR UPDATE`.
+- Stock được kiểm tra lại, total tính server-side từ CartItem snapshot, trừ stock có điều kiện và đổi `CART → NEW`.
+- Bất kỳ item nào lỗi đều rollback toàn bộ; CartItem được giữ làm chi tiết đơn.
+- Sau checkout, lần mở Cart tiếp theo tự tạo một Cart `status=CART` mới.
+
+### Order History
+
+- `/orders` chỉ lấy order của User hiện tại và luôn loại `CART`.
+- Filter được whitelist bằng `OrderStatus_24162095`; giá trị lạ như `HACKED` fallback về tất cả.
+- `/order/detail` query theo đồng thời `cartId` và `userId`, nên User khác nhận 404.
+
+| Database code | Nhãn giao diện |
+|---|---|
+| `NEW` | Đơn hàng mới |
+| `CONFIRMED` | Đã xác nhận |
+| `PREPARING` | Chuẩn bị hàng |
+| `IN_TRANSIT` | Vận chuyển |
+| `OUT_FOR_DELIVERY` | Giao hàng |
+| `DELIVERED` | Đã giao |
+| `CANCELLED` | Đơn hàng hủy |
+| `RETURNED` | Đơn hàng hoàn |
+
+### Demo status trong MySQL Workbench
+
+1. Login tài khoản `user`, mở `/orders`, ghi lại mã đơn.
+2. Mở `database/order_status_demo_24162095.sql`, đặt `@order_id` bằng mã đơn.
+3. Chạy **một** lệnh UPDATE trạng thái.
+4. Refresh `/orders`, kiểm tra badge và filter tương ứng.
+5. Lặp lại cho các status còn lại. Thay đổi `CANCELLED/RETURNED` thủ công chỉ để demo, không tự cộng lại stock.
+
+Hướng dẫn trình diễn đầy đủ nằm trong `SHOPPING_DEMO_24162095.md`.
+
+### Milestone commits
+
+| Phase | Commit | Timestamp | Push |
+|---|---|---|---|
+| Cart | `0e21bc1a40e8ea8ddb638d7d11efb33e2101997b` | `2026-10-01T14:03:56+07:00` | `origin/main` thành công |
+| COD | `1250e2cd775cee43e6cadead8e14907160ddc82f` | `2026-10-01T14:10:43+07:00` | `origin/main` thành công |
+| Order History | `089bf03b46737dc55b80d8ea98d3759947977bfa` | `2026-10-01T14:19:31+07:00` | `origin/main` thành công |
 
 ## Question mapping
 
@@ -115,12 +175,18 @@ Không dùng các mật khẩu mẫu này cho hệ thống thật.
 - Pagination: page 2 đã test cho cả User và Category.
 - Register validation: duplicate username/email đã test.
 - OTP random/expiry: test tự động pass; Gmail SMTP thật đã gửi OTP thành công.
+- Cart runtime: guest redirect login; add trùng cộng dồn; tăng/giảm/update/xóa; quantity 999 bị chặn và dữ liệu không đổi.
+- COD rollback: cố ý hạ stock dưới quantity; Cart vẫn `CART`, các Product khác không bị trừ.
+- COD success: order `NEW`, payment `COD`, total đúng, CartItem giữ nguyên, stock giảm đúng, Cart mới tạo sau đó.
+- History: đủ 8 trạng thái/filter; `HACKED` fallback all; User khác truy cập order nhận 404.
+- Maven: 9 tests, 0 failure, 0 error; `mvn clean test` và `mvn clean package` đều BUILD SUCCESS.
 
 ## Known limitations
 
 - Gmail App Password chỉ được lưu trong `mail.properties` đã bị `.gitignore`; không chụp hoặc đưa file này vào bài nộp.
 - Project dùng trường ảnh dạng đường dẫn/URL ổn định thay vì upload file; sample data có PNG theo từng nhóm sản phẩm và SVG dự phòng.
-- Các chức năng Cart/CartItem được tạo schema và sample theo đề nhưng không có UI vì 5 câu không yêu cầu cart workflow.
+- Thay đổi trạng thái `CANCELLED`/`RETURNED` thủ công trong Workbench phục vụ demo không hoàn stock tự động.
+- Project chưa có CSRF token; phù hợp phạm vi bài Servlet/JSP chạy cục bộ, không nên triển khai Internet công cộng khi chưa bổ sung lớp bảo vệ này.
 
 ## GitHub repository
 
