@@ -23,6 +23,8 @@
     <filter><filter-name>userFeature</filter-name><filter-class>vn.hcmute.web24162095.filter.UserFeatureFilter_24162095</filter-class></filter>
     <filter-mapping><filter-name>userFeature</filter-name><url-pattern>/cart</url-pattern></filter-mapping>
     <filter-mapping><filter-name>userFeature</filter-name><url-pattern>/cart/*</url-pattern></filter-mapping>
+    <filter-mapping><filter-name>userFeature</filter-name><url-pattern>/checkout</url-pattern></filter-mapping>
+    <filter-mapping><filter-name>userFeature</filter-name><url-pattern>/checkout/*</url-pattern></filter-mapping>
 
     <filter><filter-name>admin</filter-name><filter-class>vn.hcmute.web24162095.filter.AdminFilter_24162095</filter-class></filter>
     <filter-mapping><filter-name>admin</filter-name><url-pattern>/admin/*</url-pattern></filter-mapping>

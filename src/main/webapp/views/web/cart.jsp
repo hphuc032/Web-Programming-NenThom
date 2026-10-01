@@ -77,8 +77,8 @@
                 <h2>Tóm tắt đơn hàng</h2>
                 <div class="summary-row"><span>Tổng số lượng</span><strong>${totalQuantity}</strong></div>
                 <div class="summary-row summary-total"><span>Tổng cộng</span><strong><fmt:formatNumber value="${total}" type="number"/> đ</strong></div>
-                <button class="btn btn-primary btn-block" type="button" disabled>Thanh toán COD</button>
-                <p class="checkout-note">Chức năng thanh toán được triển khai ở bước COD tiếp theo.</p>
+                <a class="btn btn-primary btn-block" href="${pageContext.request.contextPath}/checkout">Thanh toán COD</a>
+                <p class="checkout-note">Thanh toán khi nhận hàng, không cần thanh toán trực tuyến.</p>
                 <a class="btn btn-outline-primary btn-block" href="${pageContext.request.contextPath}/products">Tiếp tục mua hàng</a>
             </aside>
         </div>
