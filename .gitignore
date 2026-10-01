@@ -1,0 +1,31 @@
+# Maven build output
+target/
+
+# IDE and editor files
+.idea/
+.vscode/
+*.iml
+
+# Runtime and logs
+.tomcat/
+*.log
+
+# Local secrets: only commit the *.example templates
+src/main/resources/db.properties
+src/main/resources/mail.properties
+
+# Runtime uploads
+src/main/webapp/uploads/*
+!src/main/webapp/uploads/.gitkeep
+
+# Reports, submission archives and local tooling
+*.docx
+*.pdf
+*.zip
+*.rar
+docx-qa/
+tools/
+
+# Operating-system files
+.DS_Store
+Thumbs.db
