@@ -22,6 +22,7 @@
                     <c:when test="${not empty sessionScope.account}">
                         <c:if test="${sessionScope.account.roleName eq 'USER'}">
                             <li><a class="nav-link" href="${pageContext.request.contextPath}/cart">Giỏ hàng</a></li>
+                            <li><a class="nav-link" href="${pageContext.request.contextPath}/orders">Đơn hàng của tôi</a></li>
                         </c:if>
                         <li><span class="user-greeting">Xin chào, <c:out value="${sessionScope.account.fullname}"/></span></li>
                         <li><a class="nav-link" href="${pageContext.request.contextPath}/logout">Đăng xuất</a></li>

@@ -2,6 +2,7 @@ package vn.hcmute.web24162095.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Cart_24162095 {
     private int cartId;
@@ -34,4 +35,13 @@ public class Cart_24162095 {
     public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
     public String getNote() { return note; }
     public void setNote(String note) { this.note = note; }
+    public String getStatusLabel() {
+        return OrderStatus_24162095.fromCode(status).map(OrderStatus_24162095::getLabel).orElse(status);
+    }
+    public String getStatusBadgeClass() {
+        return OrderStatus_24162095.fromCode(status).map(OrderStatus_24162095::getBadgeClass).orElse("secondary");
+    }
+    public String getFormattedBuyDate() {
+        return buyDate == null ? "" : buyDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+    }
 }
